@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:uber_x/allscreens/registration.dart';
 
 class LoginScreen extends StatelessWidget {
   const LoginScreen({super.key});
-
+  static const String idScreen ="Login";
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -88,6 +89,7 @@ class LoginScreen extends StatelessWidget {
             SizedBox(height: 35.0),
             TextButton(
                 onPressed: () {
+                  Navigator.pushNamedAndRemoveUntil(context,RegisrationScreen.idScreen,(route)=>false);
                   print("new user button clicked");
                 },
                 child: Text(

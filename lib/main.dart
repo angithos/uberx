@@ -20,7 +20,12 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: RegisrationScreen(),
+      initialRoute: LoginScreen.idScreen,
+      routes:{
+        RegisrationScreen.idScreen:(context) => RegisrationScreen(),
+        LoginScreen.idScreen:(context) => LoginScreen(),
+        Mainscreen.idScreen:(context) => Mainscreen(),
+      },
       debugShowCheckedModeBanner: false,
       
     );
