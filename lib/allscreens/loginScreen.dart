@@ -89,7 +89,7 @@ class LoginScreen extends StatelessWidget {
             SizedBox(height: 35.0),
             TextButton(
                 onPressed: () {
-                  Navigator.pushNamedAndRemoveUntil(context,RegisrationScreen.idScreen,(route)=>false);
+                
                   print("new user button clicked");
                 },
                 child: Text(
