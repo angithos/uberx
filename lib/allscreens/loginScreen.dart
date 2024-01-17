@@ -1,9 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:uber_x/allscreens/registration.dart';
+import 'package:uber_x/allscreens/mainscreen.dart';
+import 'package:uber_x/main.dart';
+import 'firebase_auth_imp.dart';
 
 class LoginScreen extends StatelessWidget {
-  const LoginScreen({super.key});
-  static const String idScreen ="Login";
+  final FirebaseAuthServices _auth = FirebaseAuthServices();
+  static const String idScreen = "Login";
+  TextEditingController emailtextEditingController = TextEditingController();
+  TextEditingController passwordtextEditingController = TextEditingController();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -36,6 +44,7 @@ class LoginScreen extends StatelessWidget {
                     height: 1.0,
                   ),
                   TextField(
+                    controller: emailtextEditingController,
                     keyboardType: TextInputType.emailAddress,
                     decoration: InputDecoration(
                         labelText: "Email",
@@ -50,6 +59,7 @@ class LoginScreen extends StatelessWidget {
                     height: 1.0,
                   ),
                   TextField(
+                    controller: passwordtextEditingController,
                     obscureText: true,
                     decoration: InputDecoration(
                         labelText: "Password",
@@ -64,17 +74,68 @@ class LoginScreen extends StatelessWidget {
                     height: 40.0,
                   ),
                   Container(
-                    width: MediaQuery.of(context).size.width*6,
+                    width: MediaQuery.of(context).size.width * 6,
                     child: ElevatedButton(
                       onPressed: () {
-                        print("loggin button clicked");
-                      },
+                      void _signIn() async {
+  String email = emailtextEditingController.text;
+  String password = passwordtextEditingController.text;
+
+  try {
+    User? user = await _auth.signInWithEmailAndPassword(
+       email,
+      password,
+    );
+
+    if (user == null) {
+      // User is not logged in
+      print("Login failed. Please check your credentials.");
+      displayToastMessage("Invalid credentials", context);
+      emailtextEditingController.clear();
+      passwordtextEditingController.clear(); 
+      
+    } else {
+      // Successfully signed in, you can navigate to the next screen here
+      Navigator.pushReplacementNamed(context, Mainscreen.idScreen);
+
+      // Show a simple alert to indicate successful login
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text("Login Successful"),
+            content: Text("You have successfully logged in."),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop(); // Close the alert
+                },
+                child: Text("OK"),
+              ),
+            ],
+          );
+        },
+      );
+    }
+  } on FirebaseAuthException catch (e) {
+    // Handle sign-in errors
+    print("Error during sign-in: ${e.message}");
+    displayToastMessage("Error during sign-in: ${e.message}", context);
+  }
+}
+_signIn();
+                           
+                          },
+                       
+                         
+ 
                       style: ButtonStyle(
                         shape: MaterialStatePropertyAll(RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(18.0),
                           side: BorderSide(color: Colors.yellowAccent),
                         )),
-                        backgroundColor: MaterialStatePropertyAll(Colors.yellow),
+                        backgroundColor:
+                            MaterialStatePropertyAll(Colors.yellow),
                         foregroundColor: MaterialStatePropertyAll(Colors.white),
                       ),
                       child: Text(
@@ -89,8 +150,8 @@ class LoginScreen extends StatelessWidget {
             SizedBox(height: 35.0),
             TextButton(
                 onPressed: () {
-                
-                  print("new user button clicked");
+                  Navigator.pushReplacementNamed(
+                      context, RegisrationScreen.idScreen);
                 },
                 child: Text(
                   "new users register here",
@@ -101,4 +162,25 @@ class LoginScreen extends StatelessWidget {
       ),
     );
   }
+displayToastMessage(String message,BuildContext context){
+     Fluttertoast.showToast(msg:message);
+
+  }
+
+
+
+
+
+
+
+//  void _signIn() async {
+//     String email = emailtextEditingController.text;
+//     String password = passwordtextEditingController.text;
+
+//     User? user = await _auth.signInWithEmailAndPassword(email, password);
+
+//     print(user);
+   
+   
+//   }
 }

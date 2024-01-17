@@ -1,24 +1,37 @@
+import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:uber_x/allscreens/loginScreen.dart';
 import 'package:uber_x/allscreens/mainscreen.dart';
 import 'package:uber_x/main.dart';
 import 'firebase_auth_imp.dart';
 
-class RegisrationScreen extends StatelessWidget {
 
+class MyRegistrationTest extends StatefulWidget {
   
-  static const String idScreen ="regisration";
+ static const String idScreen ="Login";
+  @override
 
-  TextEditingController nametextEditingController=TextEditingController();
+  State<MyRegistrationTest> createState() => _MyRegistrationTestState();
+}
+
+class _MyRegistrationTestState extends State<MyRegistrationTest> {
+  final FirebaseAuthServices _auth=FirebaseAuthServices();
+    TextEditingController nametextEditingController=TextEditingController();
   TextEditingController emailtextEditingController=TextEditingController();
   TextEditingController phonetextEditingController=TextEditingController();
   TextEditingController passwordtextEditingController=TextEditingController();
   @override
+  void dispose() {
+    // TODO: implement dispose
+    nametextEditingController.dispose();
+   emailtextEditingController.dispose();
+    phonetextEditingController.dispose();
+    passwordtextEditingController.dispose();
+  }
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+     backgroundColor: Colors.white,
       body: SingleChildScrollView(
         child: Column(
           children: [
@@ -124,7 +137,7 @@ class RegisrationScreen extends StatelessWidget {
                           displayToastMessage("Password must be 6 characters ", context);
                         }
                         else{
-                         registerNewUser(context);
+                         _signUp();
                         }
                         
                       },
@@ -148,7 +161,6 @@ class RegisrationScreen extends StatelessWidget {
             SizedBox(height:0.5),
             TextButton(
                 onPressed: () {
-                  Navigator.pushReplacementNamed(context, LoginScreen.idScreen);
                   print("new user button clicked");
                 },
                 child: Text(
@@ -159,83 +171,28 @@ class RegisrationScreen extends StatelessWidget {
         ),
       ),
     );
+
+
   }
-
-  final FirebaseAuth firebaseAuth = FirebaseAuth.instance;
-
-void registerNewUser(BuildContext context) async {
-  try {
-    // Show loading indicator
-    showLoadingIndicator(context, "Creating account...");
-
-    UserCredential userCredential = await firebaseAuth.createUserWithEmailAndPassword(
-      email: emailtextEditingController.text,
-      password: passwordtextEditingController.text,
-      
-    );
-  
-     
-    // Hide loading indicator
-    Navigator.pop(context);
-
-    User? firebaseUser = userCredential.user;
-
-    if (firebaseUser != null) {
-      // Save user info to database
-      saveUserInfoToDatabase();
-
-      displayToastMessage("Congrats! Your account has been created", context);
-
-      // Navigate to the main screen
-      Navigator.pushNamedAndRemoveUntil(context, Mainscreen.idScreen, (route) => false);
-    } else {
-      displayToastMessage("User has not been created", context);
-    }
-  } catch (error) {
-    // Handle specific errors
-    String errorMessage = "$error";
-
-    // Hide loading indicator
-    Navigator.pop(context);
-
-    displayToastMessage(errorMessage, context);
-  }
-}
-
-void saveUserInfoToDatabase() {
-  Map userDataMap = {
-    "name": nametextEditingController.text.trim(),
-    "email": emailtextEditingController.text.trim(),
-    "phone": phonetextEditingController.text.trim(),
-    
-  };
-
-  usersRef.child(firebaseAuth.currentUser!.uid).set(userDataMap);
-}
-
-void showLoadingIndicator(BuildContext context, String message) {
-  showDialog(
-    context: context,
-    barrierDismissible: false,
-    builder: (BuildContext context) {
-      return AlertDialog(
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            CircularProgressIndicator(),
-            SizedBox(height: 16),
-            Text(message),
-          ],
-        ),
-      );
-    },
-  );
-}
-  
-
-  
-}
-displayToastMessage(String message,BuildContext context){
+  displayToastMessage(String message,BuildContext context){
      Fluttertoast.showToast(msg:message);
 
   }
+   void _signUp()async{
+    String username =nametextEditingController.text;
+    String email =emailtextEditingController.text;
+    String phone=phonetextEditingController.text;
+    String password= passwordtextEditingController.text;
+
+   User? user = await _auth.signUpWithEmailAndPassword(email, password);
+ 
+  if(user != null){
+    print("user is created");
+    Navigator.pushNamedAndRemoveUntil(context, Mainscreen.idScreen, (route) => false);
+  }
+ 
+
+  }
+}
+
+ 

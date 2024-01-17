@@ -4,10 +4,17 @@ import 'package:flutter/material.dart';
 import 'package:uber_x/allscreens/loginScreen.dart';
 import 'package:uber_x/allscreens/mainscreen.dart';
 import 'package:uber_x/allscreens/registration.dart';
+import 'package:uber_x/allscreens/registration_test.dart';
 
 void main() async{
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp();
+  await Firebase.initializeApp(
+    options: const FirebaseOptions(apiKey: "AIzaSyDAW4-VYlN7can7EeQdc0XkdM9RJKZFJbM", 
+    appId: "1:686644649339:android:d07076da51c01f4500f1de",
+     messagingSenderId:"686644649339" ,
+      projectId:"uberxrider-7d48d"
+      ),
+  );
   runApp(const MyApp());
 }
 
