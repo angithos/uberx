@@ -77,58 +77,19 @@ class LoginScreen extends StatelessWidget {
                     width: MediaQuery.of(context).size.width * 6,
                     child: ElevatedButton(
                       onPressed: () {
-                      void _signIn() async {
-  String email = emailtextEditingController.text;
-  String password = passwordtextEditingController.text;
+                        if (!emailtextEditingController.text.contains("@")){
+                          displayToastMessage("Email address is not valid ", context);
+                        }
+                        else if (passwordtextEditingController.text.isEmpty){
+                          displayToastMessage("please enter a proper password", context);
 
-  try {
-    User? user = await _auth.signInWithEmailAndPassword(
-       email,
-      password,
-    );
-
-    if (user == null) {
-      // User is not logged in
-      print("Login failed. Please check your credentials.");
-      displayToastMessage("Invalid credentials", context);
-      emailtextEditingController.clear();
-      passwordtextEditingController.clear(); 
-      
-    } else {
-      // Successfully signed in, you can navigate to the next screen here
-      Navigator.pushReplacementNamed(context, Mainscreen.idScreen);
-
-      // Show a simple alert to indicate successful login
-      showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            title: Text("Login Successful"),
-            content: Text("You have successfully logged in."),
-            actions: [
-              TextButton(
-                onPressed: () {
-                  Navigator.of(context).pop(); // Close the alert
-                },
-                child: Text("OK"),
-              ),
-            ],
-          );
-        },
-      );
-    }
-  } on FirebaseAuthException catch (e) {
-    // Handle sign-in errors
-    print("Error during sign-in: ${e.message}");
-    displayToastMessage("Error during sign-in: ${e.message}", context);
-  }
-}
-_signIn();
+                        }
+                        else{
+                           _signIn(context);    
+                        }
                            
                           },
                        
-                         
- 
                       style: ButtonStyle(
                         shape: MaterialStatePropertyAll(RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(18.0),
@@ -168,7 +129,60 @@ displayToastMessage(String message,BuildContext context){
   }
 
 
+void _signIn(BuildContext context) async {
+  String email = emailtextEditingController.text;
+  String password = passwordtextEditingController.text;
 
+  try {
+    User? user = await _auth.signInWithEmailAndPassword(
+       email,
+      password,
+    );
+
+    if (user == null) {
+      // User is not logged in
+      print("Login failed. Please check your credentials.");
+      displayToastMessage("Invalid credentials", context);
+      emailtextEditingController.clear();
+      passwordtextEditingController.clear(); 
+      
+      
+    } else {
+      // Successfully signed in, you can navigate to the next screen here
+      Navigator.pushReplacementNamed(context, Mainscreen.idScreen);
+
+      // Show a simple alert to indicate successful login
+      showDialog(
+        
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            // shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(9.0),side: BorderSide(width: 3.0,color: Colors.black)),
+            actionsPadding: EdgeInsets.all(10.0),
+            // titleTextStyle: TextStyle(color: Colors.white),
+            // contentTextStyle: TextStyle(color: Colors.white),
+            // backgroundColor:Colors.blueGrey,
+            title: Text("Login Successful"),
+            content: Text("You have successfully logged in."),
+            actions: [
+              TextButton(
+                
+                onPressed: () {
+                  Navigator.of(context).pop(); // Close the alert
+                },
+                child: Text("OK"),
+              ),
+            ],
+          );
+        },
+      );
+    }
+  } on FirebaseAuthException catch (e) {
+    // Handle sign-in errors
+    print("Error during sign-in: ${e.message}");
+    displayToastMessage("Error during sign-in: ${e.message}", context);
+  }
+}
 
 
 
