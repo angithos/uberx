@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:uber_x/allscreens/otp_screen.dart';
 import 'package:uber_x/allscreens/registration.dart';
 import 'package:uber_x/allscreens/mainscreen.dart';
 import 'package:uber_x/main.dart';
@@ -133,40 +134,38 @@ void _signIn(BuildContext context) async {
   String email = emailtextEditingController.text;
   String password = passwordtextEditingController.text;
 
+  // Store the context in a local variable before the async operation
+  BuildContext localContext = context;
+
   try {
     User? user = await _auth.signInWithEmailAndPassword(
-       email,
+      email,
       password,
     );
 
     if (user == null) {
       // User is not logged in
       print("Login failed. Please check your credentials.");
-      displayToastMessage("Invalid credentials", context);
+      displayToastMessage("Invalid credentials", localContext);
       emailtextEditingController.clear();
-      passwordtextEditingController.clear(); 
-      
-      
+      passwordtextEditingController.clear();
     } else {
+
       // Successfully signed in, you can navigate to the next screen here
-      Navigator.pushReplacementNamed(context, Mainscreen.idScreen);
+      Navigator.push(
+        localContext,
+        MaterialPageRoute(builder: (context) => OTPScreen(phoneNumber: '+973 3623 2809')),
+      );
 
       // Show a simple alert to indicate successful login
       showDialog(
-        
-        context: context,
+        context: localContext,
         builder: (BuildContext context) {
           return AlertDialog(
-            // shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(9.0),side: BorderSide(width: 3.0,color: Colors.black)),
-            actionsPadding: EdgeInsets.all(10.0),
-            // titleTextStyle: TextStyle(color: Colors.white),
-            // contentTextStyle: TextStyle(color: Colors.white),
-            // backgroundColor:Colors.blueGrey,
             title: Text("Login Successful"),
             content: Text("You have successfully logged in."),
             actions: [
               TextButton(
-                
                 onPressed: () {
                   Navigator.of(context).pop(); // Close the alert
                 },
@@ -180,9 +179,10 @@ void _signIn(BuildContext context) async {
   } on FirebaseAuthException catch (e) {
     // Handle sign-in errors
     print("Error during sign-in: ${e.message}");
-    displayToastMessage("Error during sign-in: ${e.message}", context);
+    displayToastMessage("Error during sign-in: ${e.message}", localContext);
   }
 }
+
 
 
 
