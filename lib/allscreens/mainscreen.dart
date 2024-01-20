@@ -5,6 +5,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:uber_x/all%20widgets/Divider.dart';
+import 'package:uber_x/allscreens/location_help.dart';
 
 class Mainscreen extends StatefulWidget {
   const Mainscreen({super.key});
@@ -13,11 +14,13 @@ class Mainscreen extends StatefulWidget {
   State<Mainscreen> createState() => _MainscreenState();
 }
 
-class _MainscreenState extends State<Mainscreen> {
+class _MainscreenState extends State<Mainscreen> { 
+
   final Completer<GoogleMapController> _controllerGoogleMap =
       Completer<GoogleMapController>();
 
   late GoogleMapController newGoogleMapController;
+  final GlobalKey<ScaffoldState> scaffoldKey =new GlobalKey<ScaffoldState> ();
 
   static const CameraPosition _kGooglePlex = CameraPosition(
     target: LatLng(26.188457391704546, 50.50562990481436),
@@ -27,20 +30,98 @@ class _MainscreenState extends State<Mainscreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: scaffoldKey,
         appBar: AppBar(
           title: Text("Uber X"),
           backgroundColor: Colors.amberAccent.shade400,
         ),
+        drawer: 
+          // color: Colors.white,
+          // width: 55.0,
+          // height: 75.0,
+           Drawer(
+            child: ListView(
+              
+              children: [
+                //drawer header
+                UserAccountsDrawerHeader(
+                    
+                    accountName: Text("Profile name", style: TextStyle(fontSize: 16.0, fontFamily: "Brand-Bold" ,color: Colors.black)),
+                    accountEmail: Text("show profile",style: TextStyle(color: Colors.black54),),
+                    currentAccountPicture: CircleAvatar(
+                    backgroundImage: AssetImage("images/user_icon.png"),
+                    ),
+                    decoration: BoxDecoration(color: Colors.white),
+                ),
+                // DividerWidget(),
+                SizedBox(height: 12.0,),
+
+                //drawer body controllers
+                ListTile(
+                  leading: Icon(Icons.history),
+                  title: Text("History",style: TextStyle(fontSize: 15.0),),
+                ),
+                ListTile(
+                  leading: Icon(Icons.person),
+                  title: Text("Visit profile",style: TextStyle(fontSize: 15.0),),
+                ),
+                ListTile(
+                  leading: Icon(Icons.info),
+                  title: Text("About",style: TextStyle(fontSize: 15.0),),
+                ),
+              ],
+            ),
+          ),
+        
         body: Stack(
+          
           children: [
-            GoogleMap(
-              mapType: MapType.normal,
-              myLocationButtonEnabled: true,
-              initialCameraPosition: _kGooglePlex,
-              onMapCreated: (GoogleMapController controller) {
-                _controllerGoogleMap.complete(controller);
-                newGoogleMapController = controller;
-              },
+            Expanded(
+              child: GoogleMap(
+                mapType: MapType.normal,
+                myLocationButtonEnabled: true,
+                initialCameraPosition: _kGooglePlex,
+                onMapCreated: (GoogleMapController controller) {
+                  _controllerGoogleMap.complete(controller);
+                  newGoogleMapController = controller;
+              //      LocationHelper.checkAndRequestLocationPermission(
+              //   newGoogleMapController,
+              // );
+                },
+              ),
+            ),
+            //hamburgerbutton for drawer
+
+            Positioned(
+              
+              top: 45.0 ,
+              left: 22.0,
+
+              child: GestureDetector(
+                onTap: (){
+                  print("button pressed");
+                  scaffoldKey.currentState?.openDrawer();
+                },
+                child: Container(
+                decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(22.0),
+                boxShadow: [
+                  BoxShadow(
+                    color:Colors.black,
+                    blurRadius: 6.0,
+                    spreadRadius: 0.5,
+                    offset: Offset(0.7, 0.7)
+                  )
+                ]
+                            ),
+                            child: CircleAvatar(
+                backgroundColor: Colors.white,
+                child: Icon(Icons.menu,color: Colors.black,),
+                radius: 20.0,
+                            ),
+                            ),
+              ),
             ),
             Positioned(
               left: 0.0,
@@ -118,7 +199,6 @@ class _MainscreenState extends State<Mainscreen> {
                       ],
                       ),
                        SizedBox(height: 10.0),
-
                        DividerWidget(),
                        SizedBox(height: 16.0),
                       Row(children: [
